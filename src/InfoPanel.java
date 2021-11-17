@@ -6,6 +6,7 @@ public class InfoPanel extends JPanel {
     private JLabel label;
     private JPanel cards;
     private JButton back;
+    private JButton play;
 
     public InfoPanel(JPanel c) {
         this.cards = c;
@@ -21,5 +22,14 @@ public class InfoPanel extends JPanel {
 
         label = new JLabel("Info Panel");
         add(label);
+
+        play = new JButton("Play");
+        play.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent evt) {
+                CardLayout cl = (CardLayout) cards.getLayout();
+                cl.show(cards, "HANG");
+            }
+        });
+        add(play);
     }
 }
