@@ -4,11 +4,9 @@ import java.awt.event.*;
 
 public class Game extends JFrame {
     public Game() {
-        HangmanPanel hp = new HangmanPanel();
-        InfoPanel ip = new InfoPanel();
-
         String info = "INFO";
         String hang = "HANG";
+        String main = "MAIN";
 
         Container ct = getContentPane();
 
@@ -17,6 +15,9 @@ public class Game extends JFrame {
         JPanel mainscreen = new JPanel(); //use FlowLayout
         JButton hB = new JButton("Play");
         JButton iB = new JButton("How to Play?");
+
+        HangmanPanel hp = new HangmanPanel(cards);
+        InfoPanel ip = new InfoPanel(cards);
 
         hB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -35,7 +36,7 @@ public class Game extends JFrame {
         mainscreen.add(hB);
         mainscreen.add(iB);
 
-        cards.add(mainscreen);
+        cards.add(mainscreen, main);
         cards.add(hp, hang);
         cards.add(ip, info);
         ct.add(cards);
