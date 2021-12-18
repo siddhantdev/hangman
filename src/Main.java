@@ -2,8 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Game extends JFrame {
-    public Game() {
+public class Main extends JFrame {
+    public Main() {
         String info = "INFO";
         String hang = "HANG";
         String main = "MAIN";
@@ -52,7 +52,7 @@ public class Game extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new Game();  // Let the constructor do the job
+                new Main();  // Let the constructor do the job
             }
         });
     }
