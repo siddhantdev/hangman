@@ -1,5 +1,9 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import javax.swing.*;
 
 public class HangmanPanel extends JPanel {
@@ -7,6 +11,8 @@ public class HangmanPanel extends JPanel {
     private JPanel cards;
     private JButton back;
     private int gRemaining;
+    private String guess;
+    private String word;
 
     public HangmanPanel(JPanel c) {
         this.cards = c;
@@ -23,7 +29,26 @@ public class HangmanPanel extends JPanel {
         label = new JLabel("Hangman Panel");
         add(label);
 
-        gRemaining = 0;
+        gRemaining = 6;
+
+        word = "";
+        try {
+            int index = (int) (Math.random() * 2749 + 1);
+            Scanner in = new Scanner(new File("words.txt"));
+            for(int i = 1; i <= index; i++) {
+                word = in.nextLine();
+            }
+        }
+        catch (FileNotFoundException e) {
+            word = "hangman";
+        }
+
+        word.toLowerCase();
+        System.out.println(word);
+
+        guess = "";
+        for(int i = 0; i < word.length(); i++)
+            guess += "_";
     }
 
     public void paintComponent(Graphics g) {
