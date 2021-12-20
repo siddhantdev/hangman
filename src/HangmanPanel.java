@@ -49,7 +49,6 @@ public class HangmanPanel extends JPanel {
         }
 
         word.toLowerCase();
-        System.out.println(word);
 
         guess = "";
         for(int i = 0; i < word.length(); i++)
