@@ -12,6 +12,9 @@ public class HangmanPanel extends JPanel {
     private int gRemaining;
     private String guess;
     private String word;
+    private JButton[] buttons;
+    private boolean gameOver;
+    private boolean won;
 
     public HangmanPanel(JPanel c) {
         this.cards = c;
@@ -23,9 +26,15 @@ public class HangmanPanel extends JPanel {
             }
         });
 
-        add(back);
+        won = false;
+        gameOver = false;
 
-        gRemaining = 0;
+        setLayout(new BorderLayout());
+        JPanel bP = new JPanel();
+        bP.add(back);
+        add(bP, BorderLayout.NORTH);
+
+        gRemaining = 6;
 
         word = "";
         try {
@@ -40,10 +49,23 @@ public class HangmanPanel extends JPanel {
         }
 
         word.toLowerCase();
+        System.out.println(word);
 
         guess = "";
         for(int i = 0; i < word.length(); i++)
             guess += "_";
+
+        ButtonPressed listener = new ButtonPressed();
+        JPanel bPanel = new JPanel();
+        bPanel.setLayout(new GridLayout(3, 9));
+        buttons = new JButton[26];
+        for(int i = 0; i < 26; i++) {
+            buttons[i] = new JButton(((char) ('a' + i)) + "");
+            buttons[i].addActionListener(listener);
+            bPanel.add(buttons[i]);
+        }
+
+        add(bPanel, BorderLayout.SOUTH);
     }
 
     public void paintComponent(Graphics g) {
@@ -54,9 +76,15 @@ public class HangmanPanel extends JPanel {
 
         int x = getWidth();
         int y = getHeight();
-        drawGuess(g2, x, y);
-        drawGallow(g2, x, y);
-        drawMan(g2, x, y);   
+
+        if(won || gameOver) {
+            drawOver(g2, x, y);
+        }
+        else {
+            drawGuess(g2, x, y);
+            drawGallow(g2, x, y);
+            drawMan(g2, x, y);   
+        }
     }
 
     private void drawGuess(Graphics2D g2, int x, int y) {
@@ -118,5 +146,58 @@ public class HangmanPanel extends JPanel {
         if (gRemaining == 0)
             g2.drawLine(cCenterX, (int) (cCenterY + y * 0.19 - y * 0.19 * 0.005), (int) (cCenterX + x * 0.05),
                     (int) (cCenterY + radius + y * 0.19 + y * 0.19 * 0.23));
+    }
+
+    private class ButtonPressed implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            JButton b = (JButton) event.getSource();
+            char letter = b.getText().charAt(0);
+            buttons[letter - 'a'].setEnabled(false);
+
+            if(!word.contains(letter + ""))
+                gRemaining--;
+                if(gRemaining == 0) {
+                    gameOver = true;
+                    disableAll();
+                }
+            else {
+                for(int i = 0; i < word.length(); i++) {
+                    if(word.charAt(i) == letter)
+                        guess = guess.substring(0, i) + letter + guess.substring(i + 1);
+                }
+                if(guess.equals(word)) {
+                    won = true;
+                    disableAll();
+                }
+            }
+
+            repaint();
+        }
+    }
+
+    private void drawOver(Graphics2D g2, int x, int y) {
+        g2.setColor(Color.GRAY);
+        drawMan(g2, x, y);
+        drawGuess(g2, x, y);
+        drawGallow(g2, x, y);
+        g2.setColor(Color.RED);
+
+        Font font = g2.getFont();
+        g2.setFont(new Font(font.getName(), Font.PLAIN, (int) (Math.min(x, y) * 0.2)));
+        FontMetrics fm = g2.getFontMetrics();
+        String text = "";
+        
+        if(won)
+            text = "You Won";
+        else
+            text = "You Lost";
+
+        g2.drawString(text, (x - fm.stringWidth(text)) / 2, ((y - fm.getHeight()) / 2) + fm.getAscent());
+    }
+
+    private void disableAll() {
+        for(JButton i : buttons)
+            i.setEnabled(false);
     }
 }
