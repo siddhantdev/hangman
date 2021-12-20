@@ -39,7 +39,7 @@ public class HangmanPanel extends JPanel {
         word = "";
         try {
             int index = ((int) (Math.random() * 2750)) + 1;
-            Scanner in = new Scanner(new File("words.txt"));
+            Scanner in = new Scanner(new File("../words.txt"));
             for(int i = 1; i <= index; i++) {
                 word = in.nextLine();
             }
