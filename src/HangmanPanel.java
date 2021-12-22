@@ -15,44 +15,22 @@ public class HangmanPanel extends JPanel {
     private JButton[] buttons;
     private boolean gameOver;
     private boolean won;
+    private JButton rButton;
 
     public HangmanPanel(JPanel c) {
         this.cards = c;
         back = new JButton("<--");
         back.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent evt) {
-                CardLayout cl = (CardLayout) cards.getLayout();
-                cl.show(cards, "MAIN");
-            }
-        });
-
-        won = false;
-        gameOver = false;
+                public void actionPerformed(ActionEvent evt) {
+                    CardLayout cl = (CardLayout) cards.getLayout();
+                    cl.show(cards, "MAIN");
+                }
+            });
 
         setLayout(new BorderLayout());
         JPanel bP = new JPanel();
         bP.add(back);
         add(bP, BorderLayout.NORTH);
-
-        gRemaining = 6;
-
-        word = "";
-        try {
-            int index = ((int) (Math.random() * 2750)) + 1;
-            Scanner in = new Scanner(new File("../words.txt"));
-            for(int i = 1; i <= index; i++) {
-                word = in.nextLine();
-            }
-        }
-        catch (FileNotFoundException e) {
-            word = "hangman";
-        }
-
-        word.toLowerCase();
-
-        guess = "";
-        for(int i = 0; i < word.length(); i++)
-            guess += "_";
 
         ButtonPressed listener = new ButtonPressed();
         JPanel bPanel = new JPanel();
@@ -63,6 +41,19 @@ public class HangmanPanel extends JPanel {
             buttons[i].addActionListener(listener);
             bPanel.add(buttons[i]);
         }
+
+        rButton = new JButton("Play Again");
+        rButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    refresh();
+                }
+            });
+        JPanel rPanel = new JPanel();
+        rPanel.setOpaque(false);
+        rPanel.add(rButton);
+        add(rPanel, BorderLayout.CENTER);
+
+        refresh();
 
         add(bPanel, BorderLayout.SOUTH);
     }
@@ -78,6 +69,8 @@ public class HangmanPanel extends JPanel {
 
         if(won || gameOver) {
             drawOver(g2, x, y);
+            rButton.setVisible(true);
+            rButton.setEnabled(true);
         }
         else {
             drawGuess(g2, x, y);
@@ -102,7 +95,7 @@ public class HangmanPanel extends JPanel {
             String letter = guess.substring(i, i + 1);
             if(!letter.equals("_"))
                 g2.drawString(letter, (int) (xC + (width - (x * 0.005) - fm.stringWidth(letter)) / 2),(int) (yC + (((height - fm.getHeight()) / 2) + fm.getAscent())));
-            
+
             xC += width;
         }
     }
@@ -111,7 +104,7 @@ public class HangmanPanel extends JPanel {
         g2.drawLine((int) (x * 0.2), (int) (y * 0.8), (int) (x * 0.8), (int) (y * 0.8));
         g2.drawRect((int) (x / 2 - x * 0.2), (int) (y * 0.8 - y * 0.075), (int) (x * 0.4), (int) (y * 0.075));
         g2.drawLine((int) (x / 2 + x * 0.2 - x * 0.035), (int) (y * 0.8 - y * 0.075),
-                (int) (x / 2 + x * 0.2 - x * 0.035), (int) (y * 0.3));
+            (int) (x / 2 + x * 0.2 - x * 0.035), (int) (y * 0.3));
         g2.drawLine((int) (x / 2 + x * 0.2 - x * 0.035), (int) (y * 0.3), (int) (x / 2), (int) (y * 0.3));
         g2.drawLine((int) (x / 2), (int) (y * 0.3), (int) (x / 2), (int) (y * 0.3 + y * 0.05));
     }
@@ -132,19 +125,19 @@ public class HangmanPanel extends JPanel {
 
         if (gRemaining <= 3)
             g2.drawLine(cCenterX, cCenterY + radius + (int) (y * 0.19 * 0.07), (int) (cCenterX - x * 0.05),
-                    cCenterY + radius + (int) (y * 0.19 * 0.23));
+                cCenterY + radius + (int) (y * 0.19 * 0.23));
 
         if (gRemaining <= 2)
             g2.drawLine(cCenterX, cCenterY + radius + (int) (y * 0.19 * 0.07), (int) (cCenterX + x * 0.05),
-                    cCenterY + radius + (int) (y * 0.19 * 0.23));
+                cCenterY + radius + (int) (y * 0.19 * 0.23));
 
         if (gRemaining <= 1)
             g2.drawLine(cCenterX, (int) (cCenterY + y * 0.19 - y * 0.19 * 0.005), (int) (cCenterX - x * 0.05),
-                    (int) (cCenterY + radius + y * 0.19 + y * 0.19 * 0.23));
+                (int) (cCenterY + radius + y * 0.19 + y * 0.19 * 0.23));
 
         if (gRemaining == 0)
             g2.drawLine(cCenterX, (int) (cCenterY + y * 0.19 - y * 0.19 * 0.005), (int) (cCenterX + x * 0.05),
-                    (int) (cCenterY + radius + y * 0.19 + y * 0.19 * 0.23));
+                (int) (cCenterY + radius + y * 0.19 + y * 0.19 * 0.23));
     }
 
     private class ButtonPressed implements ActionListener {
@@ -156,10 +149,11 @@ public class HangmanPanel extends JPanel {
 
             if(!word.contains(letter + ""))
                 gRemaining--;
-                if(gRemaining == 0) {
-                    gameOver = true;
-                    disableAll();
-                }
+
+            if(gRemaining == 0) {
+                gameOver = true;
+                disableAll();
+            }
             else {
                 for(int i = 0; i < word.length(); i++) {
                     if(word.charAt(i) == letter)
@@ -186,7 +180,7 @@ public class HangmanPanel extends JPanel {
         g2.setFont(new Font(font.getName(), Font.PLAIN, (int) (Math.min(x, y) * 0.2)));
         FontMetrics fm = g2.getFontMetrics();
         String text = "";
-        
+
         if(won)
             text = "You Won";
         else
@@ -198,5 +192,38 @@ public class HangmanPanel extends JPanel {
     private void disableAll() {
         for(JButton i : buttons)
             i.setEnabled(false);
+    }
+
+    private void refresh() {
+        won = false;
+        gameOver = false;        
+
+        gRemaining = 6;
+
+        word = "";
+        try {
+            int index = ((int) (Math.random() * 2750)) + 1;
+            Scanner in = new Scanner(new File("../words.txt"));
+            for(int i = 1; i <= index; i++) {
+                word = in.nextLine();
+            }
+        }
+        catch (FileNotFoundException e) {
+            word = "hangman";
+        }
+
+        word.toLowerCase();
+
+        guess = "";
+        for(int i = 0; i < word.length(); i++)
+            guess += "_";
+
+        for(JButton i : buttons)
+            i.setEnabled(true);
+
+        rButton.setEnabled(false);
+        rButton.setVisible(false);
+
+        repaint();
     }
 }
