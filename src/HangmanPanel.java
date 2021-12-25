@@ -187,6 +187,16 @@ public class HangmanPanel extends JPanel {
             text = "You Lost";
 
         g2.drawString(text, (x - fm.stringWidth(text)) / 2, ((y - fm.getHeight()) / 2) + fm.getAscent());
+
+        if(gameOver) {
+            int wY = ((y - fm.getHeight()) / 2);
+            g2.setFont(new Font(font.getName(), Font.PLAIN, (int) (Math.min(x, y) * 0.1)));
+            fm = g2.getFontMetrics();
+            wY += 2 * fm.getHeight();
+            wY += fm.getAscent();
+
+            g2.drawString(word, (x - fm.stringWidth(word)) / 2, wY);
+        }
     }
 
     private void disableAll() {
